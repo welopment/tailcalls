@@ -1,0 +1,14 @@
+{
+ "version":"2.0.0",
+  "tasks": [
+    {
+      "taskName": "compile",
+      "command": "/home/michael/Programmieren/dart/p1/tools/build ",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": []
+    }
+  ]
+}
