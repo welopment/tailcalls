@@ -1,5 +1,5 @@
-tailcall
-========
+tailcalls
+=========
 
 A library for trampolining tail calls.
 
