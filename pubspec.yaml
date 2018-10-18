@@ -2,9 +2,9 @@ name: "tailcalls"
 version: "0.1.0"
 author: "Michael Bürgerling <michael.buergerling@gmail.com>"
 description: "A library for trampolining tail calls by hand in cases when tail call optimization isn't done automatically. This library is ported from Scala's standard library (TailRec)."
-homepage: "https://www.welopment.com"
+homepage: "https://github.com/welopment/tailcalls"
 environment:
-  sdk: ">=1.8.0 <=2.1.0"
+  sdk: ">=1.8.0 <=3.0.0"
 
 #transformers:
 #- $dart2js:

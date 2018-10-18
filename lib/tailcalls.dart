@@ -163,11 +163,12 @@ class Cont<A, B> extends TailRec<B> {
 /// _Done
 ///
 class _Done<A> extends TailRec<A> {
+  _Done(this.value);
   @override
   final A value;
   @override
   final bool _isDone = true;
-  _Done(this.value);
+  
 }
 
 //
