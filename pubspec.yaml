@@ -1,5 +1,5 @@
 name: "tailcalls"
-version: "0.1.0"
+version: "0.1.1"
 author: "Michael Bürgerling <michael.buergerling@gmail.com>"
 description: "A library for trampolining tail calls by hand in cases when tail call optimization isn't done automatically. This library is ported from Scala's standard library (TailRec)."
 homepage: "https://github.com/welopment/tailcalls"
