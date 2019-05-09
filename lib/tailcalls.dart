@@ -119,12 +119,17 @@ abstract class TailRec<A> {
 
   // typedef TailRec<B> UbergFu<A, B>(A);
   /// TailRec.flatMap
+  ///
+  ///
+  /// type '(dynamic) => TailRec<dynamic>' is not a subtype of type '(List<Tupl<String, Termtype<dynamic>>>) => TailRec<List<Tupl<String, Termtype<dynamic>>>>'
+
   TailRec<B> flatMap<B>(dynamic /*UbergFu<A, B>*/ f) {
     if (this is _Done) {
       A a = this.value;
       return new _Bounce<B>(() => f(a));
     } else if (this is _Bounce) {
       TailRec<A> c = this;
+      //(List<Tupl<String, Termtype<dynamic>>>) => TailRec<List<Tupl<String, Termtype<dynamic>>>>
       return new Cont<A, B>(c, f);
     } else if (this is Cont) {
       Cont<A, B> c = (this as Cont<A, B>);
@@ -168,7 +173,6 @@ class _Done<A> extends TailRec<A> {
   final A value;
   @override
   final bool _isDone = true;
-  
 }
 
 //
