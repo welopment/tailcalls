@@ -1,4 +1,4 @@
-import '../lib/test_tailcalls.dart';
+import 'package:tailcalls/test_tailcalls.dart';
 
 void main() {
   main1();

@@ -14,4 +14,10 @@
 
 ## 0.1.0
 
-- Fixed minor issues discovered by pana.
+- Fixed minor issues discovered by pana related to Version 2.0 of Dart
+## 0.1.1
+
+- Fixed minor issues discovered by pana related to Version 2.1 of Dart
+
+## 0.1.2
+- Fixed minor issues discovered by pana related to Version 2.3 of Dart
