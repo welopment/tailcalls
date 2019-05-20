@@ -57,6 +57,16 @@ int startRecursion2(int n) {
   return recursiveFunction(0);
 }
 
+class Defs {
+  static TailRec odd(n) => n == 0 ? done(false) : tailcall(() => even(n - 1));
+  static TailRec even(n) => n == 0 ? done(true) : tailcall(() => odd(n - 1));
+
+  static int badodd(n) => n == 0 ? false : badeven(n - 1);
+  static int badeven(n) => n == 0 ? true : badodd(n - 1);
+}
+
+void main1() {}
+
 void main() {
   // Example 1
   //var res = fib(20).result();
@@ -79,4 +89,7 @@ void main() {
   print("begin 2");
   var res2 = startRecursion2(10000);
   print("end: " + res2.toString());
+
+  // Example 4
+  print(Defs.even(1000000).compute());
 }
