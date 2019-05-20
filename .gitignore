@@ -3,3 +3,4 @@
 .vscode/*
 .packages
 pubspec.lock
+tailcalls.code-workspace
