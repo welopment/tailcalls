@@ -1,44 +1,6 @@
-///
-/// Typedefs
-///
-///
-
-typedef TailRec<B> UbergFu<A, B>(A x);
-
-typedef B UnterFu<A, B>(A x);
-
-///
-/// Utility function
-///
-/// range
-///
-
 abstract class TailRec<A> {
   A value;
 
-  //
-  // In Scala:
-  //
-  // result
-  //
-  //
-  // Returns the result of the tailcalling computation
-  //
-  //@annotation.tailrec final def result: A = this match {
-  //  case Done(a) => a
-  //  case Call(t) => t().result
-  //  case Cont(a, f) => a match {
-  //    case Done(v) => f(v).result
-  //    case Call(t) => t().flatMap(f).result
-  //    case Cont(b, g) => b.flatMap(x => g(x) flatMap f).result
-  //  }
-  //}
-
-  ///
-  /// TailRec.result
-  ///
-  /// (adapted from Scala)
-  ///
   A result() {
     TailRec<A> tr = this;
     while (!(tr is _Done<A>)) {
@@ -46,31 +8,24 @@ abstract class TailRec<A> {
         tr = (tr as _Bounce<A>).continuation();
       } else if (tr is Cont) {
         var a = (tr as Cont).a;
-        var f = (tr as Cont).f;
+        TailRec<A> Function(A) f = (tr as Cont<A, A>).f;
         if (a is _Done) {
           tr = f(a.value);
         } else if (a is _Bounce) {
-          // this is Cont und hat a, a is _Bounce, tr is Cont und hat a, ...
-          tr = a.continuation().flatMap(f); // hier Problem
+          tr = ((a as _Bounce<A>)
+              .continuation()
+              .flatMap<A>(f /*as TailRec<A> Function(A)*/) /* as TailRec<A>*/);
         } else if (a is Cont) {
-          var b = a.a;
-          var g = a.f;
-          tr = b.flatMap((x) => g(x).flatMap(f));
-        } else {
-          throw new Exception("#1");
+          TailRec<A> b = a.a;
+          TailRec<A> Function(A) g = a.f as TailRec<A> Function(A);
+          tr = b.flatMap<A>(
+              (x) => g(x).flatMap<A>(f /*as TailRec<A> Function(A)*/));
         }
-      } else {
-        throw new Exception("#2");
       }
     }
     return tr.value;
   }
 
-  ///
-  /// TailRec.compute
-  ///
-  /// from Dart
-  ///
   A compute() {
     TailRec<A> res = this;
 
@@ -84,140 +39,83 @@ abstract class TailRec<A> {
 
   bool get _isDone;
 
-  //
-  // In Scala:
-  //
-  // map
-  //
-  // Continue the computation with `f`.
-  //
-  // final def map[B](f: A => B): TailRec[B] =     flatMap(a => Call(() => Done(f(a))))
-
-  // typedef B UnterFu<A, B>(A);
-
-  ///
-  /// TailRec.map
-  ///
-
-  ///
-  TailRec<B> map<B>(UnterFu<A, B> f) {
-    /* B f(A x) */
-    return flatMap<B>((a) => new _Bounce<B>(() => new _Done<B>(f(a))));
+  TailRec<B> map<B>(B Function(A) f) {
+    return flatMap((a) => new _Bounce(() => new _Done<B>(f(a))));
   }
 
-  //
-  // In Scala:
-  //
-  // flatMap
-  //
-  //final def flatMap[B](f: A => TailRec[B]): TailRec[B] =
-  //  this match {
-  //    case Done(a) => Call(() => f(a))
-  //    case c@Call(_) => Cont(c, f)
-  //    case c: Cont[a1, b1] => Cont(c.a, (x: a1) => c.f(x) flatMap f)
-  //  }
-
-  // typedef TailRec<B> UbergFu<A, B>(A);
-  /// TailRec.flatMap
-  ///
-  ///
-  /// type '(dynamic) => TailRec<dynamic>' is not a subtype of type '(List<Tupl<String, Termtype<dynamic>>>) => TailRec<List<Tupl<String, Termtype<dynamic>>>>'
-
-  TailRec<B> flatMap<B>(dynamic /*UbergFu<A, B>*/ f) {
-    if (this is _Done) {
-      A a = this.value;
-      return new _Bounce<B>(() => f(a));
-    } else if (this is _Bounce) {
-      TailRec<A> c = this;
-      //(List<Tupl<String, Termtype<dynamic>>>) => TailRec<List<Tupl<String, Termtype<dynamic>>>>
-      return new Cont<A, B>(c, f);
-    } else if (this is Cont) {
-      Cont<A, B> c = (this as Cont<A, B>);
-      return new Cont<A, B>(c.a,
-          (A x) => c.f(x).flatMap((f as UbergFu<A, B>))); // geht: (x)=>done(x))
-      //(this as Cont<A,B>).a, (A x) => (this as Cont<A,B>).f( x).flatMap(f));
-    } else {
-      throw new Exception("");
-    }
-  }
+  TailRec<B> flatMap<B>(TailRec<B> Function(A) f);
 }
-
-//
-// In Scala:
-//
-// Cont
-//
-// protected case class Cont[A, B](a: TailRec[A], f: A => TailRec[B]) extends TailRec[B]
-
-/// Cont
-
-typedef TailRec<B> ContFu<A, B>(A x);
 
 class Cont<A, B> extends TailRec<B> {
   Cont(this.a, this.f);
 
-  TailRec<A> a;
-  ContFu<A, B> f;
+  final TailRec<A> a;
+  final TailRec<B> Function(A x) f;
+
+  @override
+  TailRec<C> flatMap<C>(TailRec<C> Function(B) f) =>
+      Cont<A, C>(this.a, (A x) => this.f(x).flatMap(f));
+
   @override
   bool get _isDone => false;
 }
 
-// in scala Done
-//   case class Done[A](value: A) extends TailRec[A]
-
-/// _Done
-///
 class _Done<A> extends TailRec<A> {
   _Done(this.value);
+
+  @override
+  TailRec<B> flatMap<B>(TailRec<B> Function(A) f) =>
+      _Bounce(() => f(this.value));
+
   @override
   final A value;
+
   @override
   final bool _isDone = true;
 }
 
-//
-// In Scala: Call
-//
-// _Bounce
-//
-// protected case class Call[A](rest: () => TailRec[A]) extends TailRec[A]
-
-/// _Bounce
-///
-///
-typedef TailRec<A> BounceFun<A>();
-
 class _Bounce<A> extends TailRec<A> {
-  _Bounce(BounceFun<A> f) {
-    this.continuation = f;
-  }
-  BounceFun<A> continuation; // oder einfach ... Function ... statt BounceFun
+  _Bounce(this.continuation);
+
+  TailRec<A> Function() continuation;
+
+  @override
+  TailRec<B> flatMap<B>(TailRec<B> Function(A) f) => Cont(this, f);
+
   @override
   final bool _isDone = false;
-  //_Bounce(TailRec<A> continuation()) : this.continuation = continuation;
-
 }
 
-//
-// In Scala:
-//
-// done
-//
-// def done[A](result: A): TailRec[A] = Done(result)
-
-/// done
-///
 TailRec<A> done<A>(A x) => new _Done<A>(x);
 
-//
-// In Scala:
-//
-// tailcall
-//
-// def tailcall[A](rest: => TailRec[A]): TailRec[A] = Call(() => rest)
+TailRec<A> tailcall<A>(TailRec<A> continuation()) =>
+    new _Bounce<A>(continuation);
 
-/// tailcall
-///
-/// "TailRec continuation()" bedeutet: "()=> new TailRec()""
-///
-TailRec<A> tailcall<A>(TailRec<A> continuation()) => new _Bounce(continuation);
+class Defs {
+  static TailRec odd(n) => n == 0 ? done(false) : tailcall(() => even(n - 1));
+  static TailRec even(n) => n == 0 ? done(true) : tailcall(() => odd(n - 1));
+
+  static int badodd(n) => n == 0 ? false : badeven(n - 1);
+  static int badeven(n) => n == 0 ? true : badodd(n - 1);
+}
+
+TailRec<int> fib(int n) {
+  if (n < 2) {
+    return done<int>(n);
+  } else {
+    return tailcall<int>(() => fib(n - 1)).flatMap<int>((x) {
+      return tailcall<int>(() => fib(n - 2)).map<int>((y) {
+        return (x + y);
+      });
+    });
+  }
+}
+
+void main() {
+  bool res1;
+  res1 = (Defs.even(101).compute());
+  print("Ergebnis von Odd/Even ist $res1");
+  num res2;
+  res2 = fib(14).result();
+  print("Ergebnis von Fibonacci ist $res2");
+}
