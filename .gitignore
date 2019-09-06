@@ -4,3 +4,5 @@
 .packages
 pubspec.lock
 tailcalls.code-workspace
+lib/tailcalls.dartx
+.gitignore
