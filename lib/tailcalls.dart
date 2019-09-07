@@ -29,8 +29,9 @@ abstract class TailRec<A> {
   A compute() {
     TailRec<A> res = this;
 
-    while (!res._isDone) {
-      final _Bounce<A> bounce = res;
+    while (!res._isDone /* && res is _Bounce*/) {
+      _Bounce<A> r = res /*as _Bounce<A>*/;
+      final _Bounce<A> bounce = r;
       res = bounce.continuation();
     }
     _Done<A> done = res;
@@ -91,23 +92,28 @@ TailRec<A> done<A>(A x) => new _Done<A>(x);
 TailRec<A> tailcall<A>(TailRec<A> continuation()) =>
     new _Bounce<A>(continuation);
 
+// -------------------------------------------------
+
 class Defs {
+  ///
   static TailRec odd(n) => n == 0 ? done(false) : tailcall(() => even(n - 1));
   static TailRec even(n) => n == 0 ? done(true) : tailcall(() => odd(n - 1));
 
+  ///
   static int badodd(n) => n == 0 ? false : badeven(n - 1);
   static int badeven(n) => n == 0 ? true : badodd(n - 1);
-}
 
-TailRec<int> fib(int n) {
-  if (n < 2) {
-    return done<int>(n);
-  } else {
-    return tailcall<int>(() => fib(n - 1)).flatMap<int>((x) {
-      return tailcall<int>(() => fib(n - 2)).map<int>((y) {
-        return (x + y);
+  ///
+  static TailRec<int> fib(int n) {
+    if (n < 2) {
+      return done<int>(n);
+    } else {
+      return tailcall<int>(() => fib(n - 1)).flatMap<int>((x) {
+        return tailcall<int>(() => fib(n - 2)).map<int>((y) {
+          return (x + y);
+        });
       });
-    });
+    }
   }
 }
 
@@ -116,6 +122,16 @@ void main() {
   res1 = (Defs.even(101).compute());
   print("Ergebnis von Odd/Even ist $res1");
   num res2;
-  res2 = fib(14).result();
+  res2 = Defs.fib(14).result();
   print("Ergebnis von Fibonacci ist $res2");
 }
+
+
+
+/*
+
+'Cont<List<Tupl<String, Termtype<String>>>, List<Tupl<String, Termtype<String>>>>' 
+'_Done<List<Tupl<String, Termtype<String>>>>'
+
+
+ */
