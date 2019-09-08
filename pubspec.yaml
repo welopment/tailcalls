@@ -6,16 +6,10 @@ homepage: "https://github.com/welopment/tailcalls"
 environment:
   sdk: '>=1.8.0 <3.0.0'
 
-#transformers:
-#- $dart2js:
-#    minify: true
 
 dependencies:
 
-#dev_dependencies:
-#  test: '1.6.3' 
 
-#web:
-#  compiler:
-#    debug: dartdevc
-#    release: dart2js
+dev_dependencies:
+  test: '1.6.3' 
+  pedantic: ^1.0.0

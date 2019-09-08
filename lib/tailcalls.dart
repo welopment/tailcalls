@@ -9,14 +9,14 @@ abstract class TailRec<A> {
       } else if (tr is Cont) {
         var a = (tr as Cont).a;
         TailRec<A> Function(A) f = (tr as Cont<A, A>).f;
-        if (a is _Done) {
+        if (a is _Done<A>) {
           tr = f(a.value);
         } else if (a is _Bounce) {
           tr = ((a as _Bounce<A>)
               .continuation()
               .flatMap<A>(f /*as TailRec<A> Function(A)*/) /* as TailRec<A>*/);
         } else if (a is Cont) {
-          TailRec<A> b = a.a;
+          TailRec<A> b = a.a as TailRec<A>;
           TailRec<A> Function(A) g = a.f as TailRec<A> Function(A);
           tr = b.flatMap<A>(
               (x) => g(x).flatMap<A>(f /*as TailRec<A> Function(A)*/));
@@ -30,18 +30,18 @@ abstract class TailRec<A> {
     TailRec<A> res = this;
 
     while (!res._isDone /* && res is _Bounce*/) {
-      _Bounce<A> r = res /*as _Bounce<A>*/;
+      _Bounce<A> r = res  as _Bounce<A>;
       final _Bounce<A> bounce = r;
       res = bounce.continuation();
     }
-    _Done<A> done = res;
+    _Done<A> done = res as _Done<A>;
     return done.value;
   }
 
   bool get _isDone;
 
   TailRec<B> map<B>(B Function(A) f) {
-    return flatMap((a) => new _Bounce(() => new _Done<B>(f(a))));
+    return flatMap((a) =>  _Bounce(() =>  _Done<B>(f(a))));
   }
 
   TailRec<B> flatMap<B>(TailRec<B> Function(A) f);
@@ -87,21 +87,21 @@ class _Bounce<A> extends TailRec<A> {
   final bool _isDone = false;
 }
 
-TailRec<A> done<A>(A x) => new _Done<A>(x);
+TailRec<A> done<A>(A x) =>  _Done<A>(x);
 
 TailRec<A> tailcall<A>(TailRec<A> continuation()) =>
-    new _Bounce<A>(continuation);
+     _Bounce<A>(continuation);
 
 // -------------------------------------------------
 
 class Defs {
   ///
-  static TailRec odd(n) => n == 0 ? done(false) : tailcall(() => even(n - 1));
-  static TailRec even(n) => n == 0 ? done(true) : tailcall(() => odd(n - 1));
+  static TailRec<bool> odd(int n) => n == 0 ? done(false) : tailcall(() => even(n - 1));
+  static TailRec<bool> even(int n) => n == 0 ? done(true) : tailcall(() => odd(n - 1));
 
   ///
-  static int badodd(n) => n == 0 ? false : badeven(n - 1);
-  static int badeven(n) => n == 0 ? true : badodd(n - 1);
+  static bool badodd(int n) => n == 0 ? false : badeven(n - 1);
+  static bool badeven(int n) => n == 0 ? true : badodd(n - 1);
 
   ///
   static TailRec<int> fib(int n) {

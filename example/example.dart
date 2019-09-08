@@ -1,5 +1,5 @@
-import '../lib/tailcalls.dart';
-import '../lib/utils.dart';
+import 'package:tailcalls/utils.dart';
+import 'package:tailcalls/tailcalls.dart';
 
 // Example 1
 
@@ -42,7 +42,7 @@ int startRecursion(int n) {
     }
   }
 
-  return recursiveFunction(0).compute();
+  return recursiveFunction(0).result();
 }
 
 int startRecursion2(int n) {
@@ -58,11 +58,11 @@ int startRecursion2(int n) {
 }
 
 class Defs {
-  static TailRec odd(n) => n == 0 ? done(false) : tailcall(() => even(n - 1));
-  static TailRec even(n) => n == 0 ? done(true) : tailcall(() => odd(n - 1));
+  static TailRec<bool > odd(int n) => n == 0 ? done(false) : tailcall(() => even(n - 1));
+  static TailRec <bool > even(int n) => n == 0 ? done(true) : tailcall(() => odd(n - 1));
 
-  static int badodd(n) => n == 0 ? false : badeven(n - 1);
-  static int badeven(n) => n == 0 ? true : badodd(n - 1);
+  static bool badodd(int n) => n == 0 ? false : badeven(n - 1);
+  static bool badeven(int n) => n == 0 ? true : badodd(n - 1);
 }
 
 void main1() {}
