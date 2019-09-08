@@ -58,8 +58,10 @@ int startRecursion2(int n) {
 }
 
 class Defs {
-  static TailRec<bool > odd(int n) => n == 0 ? done(false) : tailcall(() => even(n - 1));
-  static TailRec <bool > even(int n) => n == 0 ? done(true) : tailcall(() => odd(n - 1));
+  static TailRec<bool> odd(int n) =>
+      n == 0 ? done(false) : tailcall(() => even(n - 1));
+  static TailRec<bool> even(int n) =>
+      n == 0 ? done(true) : tailcall(() => odd(n - 1));
 
   static bool badodd(int n) => n == 0 ? false : badeven(n - 1);
   static bool badeven(int n) => n == 0 ? true : badodd(n - 1);
@@ -91,5 +93,5 @@ void main() {
   print("end: " + res2.toString());
 
   // Example 4
-  print(Defs.even(1000000).compute());
+  print(Defs.even(1000000).result());
 }
