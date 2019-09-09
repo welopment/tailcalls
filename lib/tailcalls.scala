@@ -13,8 +13,8 @@ object TailCalls {
       * of this computation with that of `f`. */
     final def flatMap[B](f: A => TailRec[B]): TailRec[B] =
       this match {
-        case Done(a) => Call(() => f(a))
-        case c@Call(_) => Cont(c, f)
+        case Done(a) => Call[B](() => f(a))
+        case c@Call(_) => Cont(c:Call[A], f: A => TailRec[B])
         // Take advantage of the monad associative law to optimize the size of the required stack
         case c: Cont[a1, b1] => Cont(c.a, (x: a1) => c.f(x) flatMap f)
       }
@@ -34,14 +34,18 @@ object TailCalls {
     /** Returns the result of the tailcalling computation.
      */
     @annotation.tailrec final def result: A = this match {
-      case Done(a) => a
+      case Done(a:A) => a
       case Call(t) => t().result
       case Cont(a, f) => a match {
         case Done(v) => f(v).result
         case Call(t) => t().flatMap(f).result
-        case Cont(b, g) => b.flatMap(x => g(x) flatMap f).result
+        case Cont(b, g) => b.flatMap(x => g(x) (flatMap) f).result
       }
     }
+
+
+
+    
   }
 
   /** Internal class representing a tailcall */

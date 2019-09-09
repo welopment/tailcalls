@@ -1,0 +1,61 @@
+class Thunk {
+  Thunk(Object answer) {
+    isDelayed = false;
+    r = answer;
+  }
+
+  Thunk.ohne() {
+    isDelayed = true;
+    r = null;
+  }
+
+  Thunk.comp(this.compute) {
+    isDelayed = true;
+    r = null;
+  }
+  Object r;
+  bool isDelayed;
+  Object force() {
+    Thunk t = this;
+    while (t.isDelayed) {
+      t = t.compute();
+    }
+    return t.r;
+  }
+
+  Thunk Function() compute;
+}
+
+class Continuation {
+  Thunk apply(Object result) {
+    return Thunk(result);
+  }
+}
+
+Thunk even(final int n, final Continuation c, final int depth) {
+  if (depth >= 1000) {
+    ///ToDo
+    return Thunk.comp(() => even(n, c, 0));
+  }
+  if (n == 0) {
+    return c.apply(true);
+  } else {
+    return odd(n - 1, c, depth + 1);
+  }
+}
+
+Thunk odd(int n, Continuation c, int depth) {
+  if (depth >= 1000) {
+    ///ToDo
+    return Thunk.comp(() => odd(n, c, 0));
+  }
+  if (n == 0) {
+    return c.apply(false);
+  } else {
+    return even(n - 1, c, depth + 1);
+  }
+}
+
+void main() {
+  Object b = even(100000000, Continuation(), 0).force();
+}
