@@ -42,7 +42,7 @@ int startRecursion(int n) {
     }
   }
 
-  return recursiveFunction(0).result();
+  return recursiveFunction(0) .result();
 }
 
 int startRecursion2(int n) {
@@ -67,31 +67,31 @@ class Defs {
   static bool badeven(int n) => n == 0 ? true : badodd(n - 1);
 }
 
-void main1() {}
+
 
 void main() {
-  // Example 1
-  //var res = fib(20).result();
-  //print("Result: $res");
+  //Example 1
+  var res = fib(2).result();
+  print("Result: $res");
 
   // Example 2
-  //List<int> r = rangeList(1, 40002);
-  //print(r.last);
-  //bool res2 = isEven(r).result();
-  //print(res2);
+  List<int> r = rangeList(1, 400);
+  print(r.last);
+  bool res2 = isEven(r).result();
+  print(res2);
 
   // Example 3
-  //List<int> r = rangeList(1, 40002);
-  //print(r.last);
-  //bool res2 = isEven(r).result();
-  //print(res2);
+  List<int> r4 = rangeList(1, 400);
+  print(r4.last);
+  bool res23 = isEven(r).result();
+  print(res23);
   print("begin 1");
-  var res = startRecursion(100000000);
-  print("end: " + res.toString());
+  var res3 = startRecursion(1000);
+  print("end: " + res3.toString());
   print("begin 2");
-  var res2 = startRecursion2(10000);
-  print("end: " + res2.toString());
+  var res4 = startRecursion2(1000);
+  print("end: " + res4.toString());
 
   // Example 4
-  print(Defs.even(1000000).result());
+  print((Defs.even(1000).result()));
 }
