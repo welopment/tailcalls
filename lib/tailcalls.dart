@@ -1,6 +1,3 @@
-// declare function BigInt(n: number): number
-// Aus Typescript,
-// Abgewandelt, der API angepasst.
 
 abstract class TailRec<A> {
   TailRec<B> map<B>(B Function(A) ab);
