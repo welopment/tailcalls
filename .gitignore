@@ -5,3 +5,4 @@ pubspec.lock
 tailcalls.code-workspace
 lib/tailcalls.archiv.tar.xz
 .gitignore
+lib/tailcalls.ts
